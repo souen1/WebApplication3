@@ -1,0 +1,158 @@
+@page
+@using Microsoft.AspNetCore.Http
+@model WebApplication3.Pages.RegisterModel
+@{
+}
+
+<div class="contafiner mt-5">
+
+	<div class="row justify-content-center align-items-center">
+
+		<div class="col-sm-12 col-md-12 col-lg-4">
+			<h1 class="mb-3">Register </h1>
+
+			<form method="post" enctype="multipart/form-data">
+
+				<input type="hidden" id="RModelToken" asp-for="RModel.Token" />
+
+				<div asp-validation-summary="All" class="text-danger"></div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="RModel.FName">First Name</label>
+					<input type="Text" asp-for="RModel.FName" class="form-control" />
+					<span asp-validaton-for="RModel.FName" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="RModel.LName">Last Name</label>
+					<input type="Text" asp-for="RModel.LName" class="form-control" />
+					<span asp-validaton-for="RModel.LName" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="RModel.NRIC">NRIC</label>
+					<input type="Text" asp-for="RModel.NRIC" class="form-control" />
+					<span asp-validaton-for="RModel.NRIC" class="text-danger"></span>
+				</div>
+
+				<div class="row mb-3">
+					<label class="col-sm-2 col-form-label" asp-for="RModel.BirthDate"></label>
+					<div class="col-sm-10">
+						<input class="form-control" asp-for="RModel.BirthDate" />
+						<span asp-validation-for="RModel.BirthDate" class="text-danger"></span>
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<label class="col-sm-2 col-form-label" asp-for="RModel.Gender"></label>
+					<div class="col-sm-10 d-flex align-items-center">
+						<div class="form-check form-check-inline">
+							@Html.RadioButtonFor(m => m.RModel.Gender, "M", new {@class = "form-check-input"})
+							<label class="form-check-label">Male</label>
+						</div>
+						<div class="form-check form-check-inline">
+							@Html.RadioButtonFor(m => m.RModel.Gender, "F", new {@class = "form-check-input"})
+							<label class="form-check-label">Female</label>
+						</div>
+						<span asp-validation-for="RModel.Gender" class="text-danger"></span>
+					</div>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="RModel.Email">Email Address</label>
+					<input type="Text" asp-for="RModel.Email" class="form-control" />
+					<span asp-validaton-for="RModel.Email" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="RModel.Password" >Password</label>
+					<input type="Text" asp-for="RModel.Password" class="form-control" id="password" onkeyup="validate()" />
+					<span asp-validaton-for="RModel.Password" class="text-danger"></span>
+				</div>
+
+				<span id="feedback" style="visibility:visible"  ></span>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="RModel.ConfirmPassword">Confirm Password</label>
+					<input type="Text" asp-for="RModel.ConfirmPassword" class="form-control" />
+					<span asp-validaton-for="RModel.ConfirmPassword" class="text-danger"></span>
+				</div>
+				<div class="mb-3">
+					<label class="form-label" asp-for="RModel.WhoAmI">Who am I</label>
+					<input type="Text" asp-for="RModel.WhoAmI" class="form-control" />
+					<span asp-validaton-for="RModel.WhoAmI" class="text-danger"></span>
+				</div>
+				<div class="mb-3">
+					
+						<input type="file" accept="application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document" asp-for="Upload" class="form-control" onchange="showImgPreview(this)" />
+						<span asp-validation-for="Upload" class="text-danger"></span>
+					
+					
+				</div>
+
+				<div class="mb-3">
+					<button type="submit" class="btn btn-primary" onclick="getToken()">Register</button>
+				</div>
+
+				
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+	function validate() {
+		var password = document.getElementById("password").value;
+		var feedback = document.getElementById("feedback");
+
+		var decimal = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$/;
+
+		if (password.match(decimal)) {
+			document.getElementById("feedback").innerHTML = "Strong Password";
+			
+			document.getElementById("feedback").style.color = "Blue"
+		}
+		else {
+			document.getElementById("feedback").innerHTML = "Password needs to have a minimum 12 chars,using a  combination of lower -case, upper -case, Numbers and special character";
+			document.getElementById("feedback").style.color = "Red"
+		}
+
+		
+
+	}
+</script>
+<script src="https://www.google.com/recaptcha/api.js"></script>
+@*<script>
+	function onSubmit(token) {
+		document.getElementById("demo-form").submit();
+	}
+</script>*@
+<script src="https://www.google.com/recaptcha/api.js?render=6Lcj91MkAAAAAEhy8ENNZYzvViHyJjLfKi6kbGFB"></script>
+<script>
+	funtion getToken() {
+		grecaptcha.ready(function () {
+			grecaptcha.execute('6Lcj91MkAAAAAEhy8ENNZYzvViHyJjLfKi6kbGFB', { action: 'submit' }).then(function (token) {
+				// Add your logic to submit to your backend server here.
+				console.log(token);
+				document.getElementById("RModelToken").value = token;
+			});
+		});
+
+	}
+	
+	setInterval(getToken, 115000);
+
+	$(function () {
+		getToken();
+	});
+</script>
+
+@*<script>
+      function onClick(e) {
+        e.preventDefault();
+        grecaptcha.ready(function() {
+          grecaptcha.execute('reCAPTCHA_site_key', {action: 'submit'}).then(function(token) {
+              // Add your logic to submit to your backend server here.
+          });
+        });
+      }
+  </script>*@
