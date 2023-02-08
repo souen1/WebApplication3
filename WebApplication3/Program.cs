@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AuthDbContext>();
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AuthDbContext>();
+builder.Services.AddIdentity<EncryptUser, IdentityRole>().AddEntityFrameworkStores<AuthDbContext>();
 builder.Services.AddScoped<MembershipService>();
 builder.Services.AddDataProtection();
 builder.Services.AddTransient(typeof(GoogleCaptchaService));

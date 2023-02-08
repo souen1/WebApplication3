@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,6 +8,7 @@ using System.Text.Encodings.Web;
 using WebApplication3.Service;
 using WebApplication3.Services;
 using WebApplication3.ViewModels;
+using WebApplication3.Model;
 
 //using System.Text.RegularExpressions;
 //using System.Drawing;
@@ -16,8 +18,8 @@ namespace WebApplication3.Pages
     public class RegisterModel : PageModel
     {
 
-        private UserManager<IdentityUser> userManager { get; }
-        private SignInManager<IdentityUser> signInManager { get; }
+        private UserManager<EncryptUser> userManager { get; }
+        private SignInManager<EncryptUser> signInManager { get; }
 
         private RoleManager<IdentityRole> roleManager { get; }
 
@@ -35,8 +37,8 @@ namespace WebApplication3.Pages
 
 
 
-        public RegisterModel(UserManager<IdentityUser> userManager,
-        SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager,MembershipService membershipService, IWebHostEnvironment webHostEnvironment, GoogleCaptchaService captchaService)
+        public RegisterModel(UserManager<EncryptUser> userManager,
+        SignInManager<EncryptUser> signInManager, RoleManager<IdentityRole> roleManager,MembershipService membershipService, IWebHostEnvironment webHostEnvironment, GoogleCaptchaService captchaService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -61,7 +63,10 @@ namespace WebApplication3.Pages
 
             if (ModelState.IsValid)
             {
-                Register? register = _membershipservice.GetById(RModel.Email);
+
+                var dataProtectionProvider = DataProtectionProvider.Create("EncryptData");
+                var protector = dataProtectionProvider.CreateProtector("Schwarzchild");
+                EncryptUser? register = _membershipservice.GetByEmail(RModel.Email);
                 if (register != null)
                 {
                     ModelState.AddModelError("RModel.Email", "Email already exixts.");
@@ -85,10 +90,18 @@ namespace WebApplication3.Pages
                 }
 
                 
-                var user = new IdentityUser()
+                var user = new EncryptUser()
                 {
                     UserName = RModel.Email,
-                    Email = RModel.Email
+                    Email = RModel.Email,
+                    FName = protector.Protect(RModel.FName),
+                    LName = protector.Protect(RModel.LName),
+                    Gender = protector.Protect(RModel.Gender),
+                    NRIC = protector.Protect(RModel.NRIC),
+                    BirthDate = protector.Protect(RModel.BirthDate.ToString()),
+                    Resume = protector.Protect(RModel.Resume),
+                    WhoAmI = protector.Protect(RModel.WhoAmI),
+                    Token = protector.Protect(RModel.Token)
                 };
                 IdentityRole role = await roleManager.FindByIdAsync("Member");
                 if (role == null)
@@ -105,7 +118,7 @@ namespace WebApplication3.Pages
                                       
                     result = await userManager.AddToRoleAsync(user, "Member");
 
-                    _membershipservice.AddUser(RModel);
+
                     
                     return RedirectToPage("Login");
                 }

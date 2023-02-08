@@ -5,26 +5,29 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebApplication3.Service;
 using WebApplication3.Services;
 using WebApplication3.ViewModels;
+using WebApplication3.Model;
 
 namespace WebApplication3.Pages
 {
     public class LoginModel : PageModel
     {
 
-        private UserManager<IdentityUser> userManager { get; }
-        private SignInManager<IdentityUser> signInManager { get; }
+        private UserManager<EncryptUser> userManager { get; }
+        private SignInManager<EncryptUser> signInManager { get; }
 
+        private MembershipService _memberService { get; }
         [BindProperty]
         public Login LModel { get; set; }
         private readonly GoogleCaptchaService _captchaService;
 
-        public LoginModel(UserManager<IdentityUser> userManager,
-        SignInManager<IdentityUser> signInManager,
+        public LoginModel(UserManager<EncryptUser> userManager,
+        SignInManager<EncryptUser> signInManager,
         MembershipService memberService, IWebHostEnvironment environment, GoogleCaptchaService captchaService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             _captchaService = captchaService;
+            _memberService = memberService;
         }
 
 
@@ -43,7 +46,8 @@ namespace WebApplication3.Pages
                 var identityResult = await signInManager.PasswordSignInAsync(LModel.Email, LModel.Password, LModel.RememberMe, true);
                 if (identityResult.Succeeded)
                 {
-
+                    var NRIC = _memberService.GetByEmail(LModel.Email).NRIC;
+                    HttpContext.Session.SetString("NRIC", NRIC);
                     return RedirectToPage("/Account/MemberDetails");
                 }
                 else if (identityResult.IsLockedOut)

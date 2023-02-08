@@ -7,7 +7,7 @@ namespace WebApplication3.Model
 
 
 
-    public class AuthDbContext : IdentityDbContext
+    public class AuthDbContext : IdentityDbContext<EncryptUser>
     {
         private readonly IConfiguration _configuration;
         //public AuthDbContext(DbContextOptions<AuthDbContext> options):base(options){ }
@@ -20,7 +20,7 @@ namespace WebApplication3.Model
             string connectionString = _configuration.GetConnectionString("AuthConnectionString"); optionsBuilder.UseSqlServer(connectionString);
         }
 
-        public DbSet <Register> Users { get; set; }
+        public DbSet <EncryptUser> Users { get; set; }
     }
 
 

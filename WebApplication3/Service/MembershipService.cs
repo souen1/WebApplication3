@@ -10,24 +10,31 @@ public class MembershipService
     {
         _context = context;
     }
-    public List<Register> GetAll()
+    public List<EncryptUser> GetAll()
     {
         return _context.Users.OrderBy(m => m.FName).ToList();
     }
-    public Register? GetById(string id)
+    public EncryptUser? GetByEmail(string id)
     {
-        Register? user = _context.Users.FirstOrDefault(
+        EncryptUser? user = _context.Users.FirstOrDefault(
         x => x.Email.Equals(id));
         return user;
     }
-    public void AddUser(Register user)
+    public void AddUser(EncryptUser user)
     {
         _context.Users.Add(user);
         _context.SaveChanges();
     }
-    public void UpdateUser(Register user)
+    public void UpdateUser(EncryptUser user)
     {
         _context.Users.Update(user);
         _context.SaveChanges();
     }
+    public EncryptUser? GetByNRIC(string id)
+    {
+        EncryptUser? user = _context.Users.FirstOrDefault(
+        x => x.NRIC.Equals(id));
+        return user;
+    }
+
 }
